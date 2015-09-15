@@ -10,21 +10,21 @@ import (
 	"strconv"
 )
 
-//const listenPort string = ":7777"
+//const listen_port string = ":7777"
 const sep string = "=====================================================================\n"
 
 func main() {
 	var port = flag.Int("p", 7777, "Listen port (default: 7777)")
 	flag.Parse()
-	listenPort := ":" + strconv.Itoa(*port)
-	fmt.Printf("Port: %d\tStr: %s\n", *port, listenPort)
-	l, err := net.Listen("tcp4", listenPort)
+	listen_port := ":" + strconv.Itoa(*port)
+	fmt.Printf("Port: %d\tStr: %s\n", *port, listen_port)
+	l, err := net.Listen("tcp4", listen_port)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Print(sep)
 	fmt.Printf("server waiting for client connection on port '%s'\n",
-		listenPort)
+		listen_port)
 	fmt.Print(sep)
 	defer l.Close()
 	for {
