@@ -1,14 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"strings"
+
+	"golang.org/x/net/html"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/headzoo/surf"
-	"github.com/moovweb/gokogiri"
 )
 
 const Version = "0.0.1"
@@ -35,11 +38,17 @@ func main() {
 	err := mech.Open(Url)
 	check(err)
 	body := mech.Body()
-	doc, err := gokogiri.ParseHtml([]byte(body))
+	//doc, err := html.Parse(strings.NewReader(s))
+	doc, err := html.Parse(strings.NewReader(body))
+	//doc, err := gokogiri.ParseHtml([]byte(body))
+	//doc, err := gokogiri.ParseHtml([]byte(body))
 	check(err)
 
-	div := doc.NodeById("middleContainer")
+	//div := doc.NodeById("middleContainer")
+	//fmt.Printf("TypeOf div: %v\n", reflect.TypeOf(div))
 	//spew.Printf("Div: %+v\n", div)
+	//os.Exit(0)
+
 	//content := string(div.Content())
 	//fmt.Printf("Div: %+v\n", div.Content())
 	//fmt.Println(content)
@@ -49,21 +58,50 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*
-		child := doc.Root()
-		//child := div.Root().FirstChild().Name()
-		//fmt.Printf("Header: %#v\n", child)
-		spew.Printf("Child: %+v\n", child)
-		next := child.NextSibling()
-		spew.Printf("Next: %+v\n", next)
-		//fmt.Printf("Header: %v\n", child.String())
-	*/
+	b := bytes.NewBufferString(string(doc.Data))
+	//b := bytes.NewBufferString(string(body))
+	//b := bytes.NewBufferString(string(div.String()))
+	z := html.NewTokenizer(b)
 
-	if *debug {
-		fmt.Printf("Mech: %#v\n", mech)
-		fmt.Printf("Body: %v\n", string(body))
-		fmt.Printf("Dom: %#v\n", mech.Dom())
-		fmt.Printf("Div: %+v\n", div)
+	depth := 0
+	for {
+		tt := z.Next()
+
+		fmt.Println("======================================================================")
+		spew.Printf("z: %+v\n", z)
+		fmt.Println("======================================================================")
+		switch {
+		case tt == html.ErrorToken:
+			// End of the document, we're done
+			return
+			/*
+				case tt == html.StartTagToken:
+					t := z.Token()
+
+					isAnchor := t.Data == "a"
+					if isAnchor {
+						fmt.Println("We found a link!")
+						spew.Printf("Data: %+v\n", t)
+					}
+			*/
+		case tt == html.TextToken:
+			if depth > 0 {
+				// emitBytes should copy the []byte it receives,
+				// if it doesn't process it immediately.
+				fmt.Println("*********")
+				fmt.Println(z.Token())
+				fmt.Println("*********")
+			}
+		case tt == html.StartTagToken, tt == html.EndTagToken:
+			tn, _ := z.TagName()
+			if len(tn) == 1 && tn[0] == 'a' {
+				if tt == html.StartTagToken {
+					depth++
+				} else {
+					depth--
+				}
+			}
+		}
 	}
 
 	//Rows of interest have the form:
