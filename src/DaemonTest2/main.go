@@ -84,6 +84,7 @@ func main() {
 	go api.Start(apiport, wg)
 	println("Server:", srv.Version(), "   API:", api.Version())
 	wg.Wait()
+	log.Println("WaitGroup returned!!")
 }
 
 var rabbitPass struct {

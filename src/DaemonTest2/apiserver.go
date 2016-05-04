@@ -72,6 +72,7 @@ func (srv *APIServer) Start(port int, wgMain sync.WaitGroup) bool {
 		select {
 		case cmd := <-cmdChan.Recv:
 			log.Println("APIServer: Received from channel: ", cmd)
+			log.Println("APIServer: Calling WaitGroup.Done()")
 			wgMain.Done()
 			return true
 		case <-time.After(1 * time.Nanosecond):

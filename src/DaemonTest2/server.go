@@ -83,6 +83,7 @@ func (srv *AppServer) Start(port int, wgMain sync.WaitGroup) bool {
 		select {
 		case cmd := <-cmdChan.Recv:
 			log.Println("Server: Received from channel: ", cmd)
+			log.Println("Server: Calling WaitGroup.Done()")
 			wgMain.Done()
 			log.Println("Server: Returning ...")
 			return true
