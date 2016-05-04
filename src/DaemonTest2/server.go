@@ -104,8 +104,8 @@ func handleConn(c net.Conn, cmdChan *nbc.NonBlockingChan, wg sync.WaitGroup) {
 	}
 	message := strings.TrimSpace(string(buf))
 	shutdownMsg := "^shutdown_server$"
-	log.Print("Message: ", message)
-	log.Printf("Message size(bytes): %d\n", len(message))
+	log.Print("Server: Message: ", message)
+	log.Printf("Server: Message size(bytes): %d\n", len(message))
 
 	matched, err := regexp.MatchString(shutdownMsg, message)
 	if err != nil {
